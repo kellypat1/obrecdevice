@@ -187,10 +187,8 @@ def maximum_of_scenario():
             pass
     return k21,listh1,listrc
 maximum_of_scenario()
-print(max(max_of_all))
-'''
+
 print("----------------------")
 print("FINAL RESULTS")
 print("hydraulic height of water above water turbine,Hk (m)-------", listh1,
-"\nCrest freeboard,Rc(m)------", listrc, "\nMaximum power of the water turbine,Pkel (W/m)-----------", max(max_of_all) if max_of_all == max(max_of_all) else None)
-'''''
+"\nCrest freeboard,Rc(m)------", listrc, "\nMaximum power of the water turbine,Pkel (W/m)-----------",max(max(max_of_all))) 
