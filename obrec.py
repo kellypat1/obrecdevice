@@ -120,20 +120,7 @@ def pkel():
 
 
 # Multiply the power of the water turbine with every beaufort in the certain harbor
-'''
-def addbf():
-	k = 0
-	listaddbf = []
-	while k < 961:
-		for i in range(0, len(Beaufort)):
-			for k in range(k, 30 + k):
-				k15 = pkel()[k] * Beaufort[i]
-				listaddbf.append(k15)
-		k += 30
-	return listaddbf
 
-#print("Multiply the power of the water turbine with every beaufort-----",addbf())
-'''
 # Every list includes the values of addbf for a certain Rc each time
 
 
@@ -164,42 +151,6 @@ def sum():
 		sum_rc_values.append(sum)
 	return sum_rc_values
 
-
-
-
-
-
-
-'''
-flag = addbf()
-def Rc_values():
-	
-	listRc_value = []
-	for i in np.arange(0, 30):
-		RC = []
-		#print("Rc---------------------------------", (i*0.1)+0.5)
-		for j in np.arange(i, len(flag), 31):
-
-			k20 = flag[j]
-			RC.append(k20)
-		#print("Rc_Value-----------------", RC)
-		listRc_value.append(RC)
-	return listRc_value
-
-Rc_values()
-
-#Summarize the values of every Rc in order to find one value for each Rc
-def sum_rc():
-	sum_rc_values = []
-	for i in range(0, len(Rc_values())):
-		sum = 0
-		for j in Rc_values()[i]:
-			sum += j
-		sum_rc_values.append(sum)
-	return sum_rc_values
-print("Summarize the values of every Rc-----------",sum_rc())
-print(len(sum_rc()))
-'''
 #Calculation of all the different scenarios for the Hk values in order to find the power of the water turbine(pkel) and the crest freeboard (RC) each time.
 #Calculation of the best scenario that maximize the power of the water turbine and calculation of Hk and Rc for this value of pkel.
 
