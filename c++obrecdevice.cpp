@@ -15,22 +15,63 @@ float Beaufort[33] = {0, 0, 0, 0.0348, 0.0187, 0.00847, 0.0033, 0.00033, 0, 0, 0
 
 
 //Calculation of Ua for every wind speed
- std::vector<float> Ua()
+vector<float> Ua()
 {
-	for (int n=0 ; n <12 ; ++n)
+	vector<float> x;
+	for (int n=0 ; n <11 ; n++)
 	{
-		std::vector<float> x;
 		float k;
 		k = pow(U10[n],1.23)*0.71;
 		x.push_back(k);
-	return x;	
 	}
+	return x;	
 }
+
+// Calculation of the development,HS and TP of every wave
+vector<double> wave_conditions()
+{
+	vector< double> x;
+	vector <float> z;
+	z =Ua();
+	vector<double> development,HS,TP;
+	for (int n=0; n<3 ; n++)
+	{
+		for(int i=0; i<11 ; i++){
+			double k1,k2,k3;
+			k1 = (9.81*Feff[n])/pow(z.at(i),2);
+			if (k1 >22800){
+				k2 = 0.243* pow(z.at(i),2)/9.81;
+				k3 = 8.13 * z.at(i)/9.81;
+				HS.push_back(k2);
+				TP.push_back(k3);
+			}
+			else{
+				k2=pow(k1,0.5) * 0.0016 * pow(z.at(i),2) / 9.81;
+				k3=pow(k1, 0.33) * 0.286 * z.at(i) / 9.81;
+				HS.push_back(k2);
+				TP.push_back(k3);
+			}
+			development.push_back(k1);
+			
+		}
+	}
+	x.insert(x.begin(),development.begin(),development.end());
+	x.insert(development.end(),HS.begin(),HS.end());
+	x.insert(HS.end(),TP.begin(),TP.end());
+	return x;
+}
+
 
 int main()
 {
-	std::vector<float> z;
+	vector<float> z;
 	z = Ua();
-	cout << z;
+	for (vector<float>::const_iterator i = z.begin(); i != z.end(); ++i)
+    cout << *i << ' ';
+	vector<double> k;
+	k =wave_conditions();
+	for( vector<double>::const_iterator i = k.begin(); i != k.end(); ++i)
+	cout<< *i<<' '	;
+
 	return 0;
 }
