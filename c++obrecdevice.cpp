@@ -13,7 +13,7 @@ float hs = 0.4;
 float Beaufort[33] = {0, 0, 0, 0.0348, 0.0187, 0.00847, 0.0033, 0.00033, 0, 0, 0, 0, 0, 0, 0.01848, 0.0099, 0.00363, 0.00066,
 			0.00011, 0, 0, 0, 0, 0, 0, 0.11761, 0.09154, 0.03829, 0.00847, 0.00077, 0, 0, 0};
 
-/*
+
 //Calculation of Ua for every wind speed
 vector<float> Ua()
 {
@@ -28,9 +28,9 @@ vector<float> Ua()
 }
 
 // Calculation of the development,HS and TP of every wave
-vector<float> wave_conditions()
+vector<vector<float>> wave_conditions()
 {
-	vector< float> x;
+	vector<vector< float>> x;
 	vector <float> z;
 	z =Ua();
 	vector<float> development,HS,TP;
@@ -52,97 +52,174 @@ vector<float> wave_conditions()
 			TP.push_back(k3);
 		}
 	}
-	x.insert(x.begin(),development.begin(),development.end());
-	x.insert(x.begin()+33,HS.begin(),HS.end());
-	x.insert(x.begin()+66,TP.begin(),TP.end());
+	x.push_back(development);
+	x.push_back(HS);
+	x.push_back(TP);
 	return x;
 }
 
 // Calculation of q,where q defines s the mean wave overtopping inflow (m3/s/m)
 vector<float> qo()
 {
-	vector <float> z;
+	vector<vector <float>> z;
 	z = wave_conditions();
 	vector <float> qo_elements;
-	for (int n=33 ; n<66; n++){
+	for (int n=0 ; n<33; n++){
 		for(float i=0.5 ; i<3.5 ; i += 0.1){
 			float k1;
-			k1 = exp(-2.6 * i / z[n]) * 0.2 * pow((9.81 *pow(z[n], 3)),0.5);
+			k1 = exp(-2.6 * i / z[1][n]) * 0.2 * pow((9.81 *pow(z[1][n], 3)),0.5);
 			qo_elements.push_back(k1);
 		}
 	}
 	return qo_elements;
 }
-*/
+
 // Calculation of Phydro, where Phydro defines the power of collected waves
 // Calculation of Pwave,where Pwave defines the initial wave power that runs in the breakwater
 // Calculation of nhydro, where nhydro  is defined as the proportion of the hydraulic power and the wave power
-vector <float> Phydro()
+vector <float> nhydro()
 {
-	vector<float> Phydro;
-	for (int i= 0.5 ; i<3.5;i +=0.1){
+	vector<int> Phydro_elements;
+	vector <float> Pwave_elements,nhydro_elements;
+	for (float i= 0.5 ; i<3.5;i +=0.1){
 		int k1;
 		k1 = 1000*9.81 *i;
-		Phydro.push_back(k1);
+		Phydro_elements.push_back(k1);
 	}
-	return Phydro;
-}
-/*
-vector <float> Pwave()
-{
-	vector <float> Pwave;
-	for(int n=33,m=66 ; n<66 && m<99 ; ++n,++m){
+	for(int n=0 ; n< 33 ; ++n){
 		float k2;
-		vector<float> z;
+		vector<vector<float>> z;
 		z = wave_conditions();
-		k2 =478.88 * pow(z[n] ,2) * (z[m]);
-		Pwave.push_back(k2);
+		k2 =478.88 * pow(z[1][n] ,2) * (z[2][n]);
+		Pwave_elements.push_back(k2);
 	}
-	return Pwave;
-}
-vector<float> nhydro()
-{
 	vector <float> nhydro;
-	vector <float> z,n;
-	z = Pwave();
-	n = Phydro();
-	for (int k=0 ; k<33 ;++k){
-		for(int l=0 ; l<30 ; ++l){
+	for (int k=0 ; k<Pwave_elements.size() ;++k){
+		for(int l=0 ; l<Phydro_elements.size() ; ++l){
 			float k3;
-			k3 = n[l]/z[k];
+			k3 = Phydro_elements[l]/Pwave_elements[k];
 			nhydro.push_back(k3);
 		}
 	}
 	return nhydro;
 }
+// Calculation of the power of the water turbine, Pk,el,for every nhydro and qo
+vector<float> pkel()
+{
+	vector<float> pkel_elements, z,t;
+	z= nhydro();
+	t=qo();
+	for(int i=0; i<z.size();++i){
+		float k1;
+		k1=1000*9.81*z[i]*t[i];
+		pkel_elements.push_back(k1);
+	}
+	return pkel_elements;
+}
+
+// Multiply the power of the water turbine with every beaufort in the certain harbor
+// Every list includes the values of addbf for a certain Rc each time
+
+vector <float> sum_rc()
+{
+	vector <float>listaddbf,z;
+	z= pkel();
+	int k=0;
+	while(k<z.size()-29){
+		for(int i=0; i<(sizeof(Beaufort)/sizeof(Beaufort[0]));++i){
+			int n=30+k;
+			for(int k; k<n ;++k){
+				float k1;
+				k1= z[k]*Beaufort[i];
+				listaddbf.push_back(k1);
+			}
+		}
+		k+=30;
+	}
+	vector <float> Rc_value;
+	for (int i =0;i<30;++i){
+		float k2;
+		for(int j=i; j<listaddbf.size();j+=31){
+			k2 = listaddbf[j];
+		}
+		Rc_value.push_back(k2);
+	}
+	vector <float> sum_rc_values;
+	for (int i =0 ;i<Rc_value.size();++i){
+		float sum = 0;
+		for(int j=Rc_value[i];j<Rc_value.size();++i){
+			sum +=j;
+		sum_rc_values.push_back(sum);
+		}
+	}
+	return sum_rc_values;
+}
+
+/*
+
+// Defination of the different scenarios for the hydraulic height of water above water turbine (m)
+vector<vector<float>> Hk()
+{
+	vector<vector<float>>  scenarios;
+	vector <float> hk;
+	for(float i=0.0 ;i = 3.5; i+=0.05){
+		for(float k = 0.5; k=3.5; k+=0.1){
+			float k1;
+			k1 = (k-i)/2 +hs;
+			if ((k1<k) && (k1>0)){
+				hk.push_back(k1);
+			}
+			else{
+				continue;
+			}
+		}
+	}
+	scenarios.push_back(hk);
+	return scenarios;
+}
 */
 
 
 
-int main()
-{
-	/*
-	vector<float> z;
-	z = Ua();
-	for (vector<float>::const_iterator i = z.begin(); i != z.end(); ++i){
-		cout << *i<<' ';
-	}
-	vector<float> k;
-	k =wave_conditions();
-	for( vector<float>::const_iterator m = k.begin(); m != k.end(); ++m){
-		cout<< *m<<' '	;
-	}
+int main(){
 
-	vector <float> y;
-	y = qo();
-	for( vector<float>::const_iterator n = y.begin(); n != y.end(); ++n){
-		cout<< *n<<' '	;
+	vector<vector<float>> z;
+	z =wave_conditions();
+	for( int k=0; k<z.size();++k){
+		for (int j = 0; j < z[k].size(); j++)
+            cout << z[k][j] << " "; 
+        cout << endl; 
 	}
-	*/
-	vector <float> t;
-	t=Phydro();
-	for( vector<float>::const_iterator n = t.begin(); n != t.end(); ++n){
-		cout<< *n<<' '	;
+	vector<float>n;
+	n=qo();
+	for( int k=0; k<n.size();++k){
+		cout << n[k];
+	cout<<"qo end------------------"<<endl;
 	}
+	vector<float> p;
+	p=nhydro();
+	for( int k=0; k<p.size();++k){
+		cout << p[k] <<" ";
+	cout<<"nhydro end-------------------------------"<<endl;
+	}
+	vector <float> p1;
+	p1 = pkel();
+	for (int k=0 ;k <p1.size();++k){
+		cout<<p1[k];
+	}
+	
+	vector <float> p2;
+	p2 = sum_rc();
+	for (int k=0 ;k <p2.size();++k){
+		cout<<p2[k]<<endl;
+	}
+/*
+	vector<vector<float>> p1;
+	p1= Hk();
+	for( int k=0; k<p1.size();++k){
+		for (int j=0; j<p1[k].size();++j)
+		cout << p1[k][j] <<" ";
+	}
+*/
 	return 0;
 }
