@@ -185,55 +185,32 @@ vector<vector<float>> Hk()
 
 vector<vector<float>> maximum_of_scenario()
 {
-	vector <float> list,listrc,max_value,n,scenario;
-	vector<float >k1,k2;
-	vector<vector<float> z;
+	vector<vector<float>>x;
+	vector <float> scenario,listh1,listrc,max_of_all_values,max_of_scenario,n;
+	float k1,k2,k3,k4,k5,k6;
+	vector<vector<float>> z;
 	z=Hk();
 	n=sum_rc();
 	for (int i =0;i<z.size();++i){
-		k1= z[i]*n;
-		scenario.push_back(k1);
-		k2 = max_value(scenario.begin(),scenario.end());
+		scenario= z[i]*n;
+		k2 = max_element(scenario.begin(),scenario.end());
 		max_of_scenario.push_back(k2);
-
+		k3 = max_element(scenario.begin(),scenario.end())-scenario.begin();
+		k4 =k3*0.1 +0.5;
+		max_of_all_values.push_back(max_of_scenario);
+		cout<<"h1--------------"<<i*0.05<<"-----------------"<<k1<<"\nmax value-------------------"<<k2<<"\nRC-----------------"<<k4;
+		if (max_of_all_values = max_element(max_of_all_values.begin(),max_of_all_values.end());){
+			k5=(i*0.05)+hs;
+			listh1.push_back(k5);
+			listrc.push_back(k4);
+			k6=max_of_all_values;
+		}
 	}
-
-
+	x.push_back(listh1);
+	x.push_back(listrc);
+	x.push_back(k6);
+	return x;
 }
-def maximum_of_scenario():
-	listh1 = []
-	listrc = []
-	max_of_all = []
-	max_of_scenario = []
-	k11 = 0
-	scenario = []
-	listsum = sum_rc()
-	for i in np.arange(0, 70):
-		if Hk()[i] != []:
-			k11 = np.array(Hk()[i]) * listsum
-			scenario.append(k11)
-			k16 = [np.amax(k11)]
-			max_of_scenario.append(k16)
-			k17 = np.argmax(k11)
-			k18 = k17 * 0.1 + 0.5
-			max_of_all.append(max_of_scenario)
-			#k20= (i *0.05) + hs
-			#listh1.append(k20)
-			print("h1--------------", i * 0.05, "----------", k11, "\nmax_value------------", k16, "\nRC--------", k18)
-			if max_of_all == max(max_of_all):
-				k19 = (i * 0.05) + hs
-				listh1.append(k19)
-				listrc.append(k18)
-				k21 = max_of_all
-				# print("hydraulic height of water above water turbine,Hk (m)-------", listh1 ,"\nCrest freeboard,Rc(m)------", listrc, "\nMaximum power of the water turbine,Pkel (W/m)-----------", k21)
-			else:
-				pass
-		else:
-			pass
-	return scenario,k21, listh1, listrc
-
-*/
-
 
 int main()
 {
@@ -274,7 +251,15 @@ int main()
 	p2= Hk();
 	for( int k=0; k<p2.size();++k){
 		for (int j=0; j<p2[k].size();++j){
-		cout << p2[k][j] <<" ";
+			cout << p2[k][j] <<" ";
+		}
+		cout<<endl;
+	}
+	vector<vector<float>> p3;
+	p3= maximum_of_scenario();
+	for( int k=0; k<p3.size();++k){
+		for (int j=0; j<p3[k].size();++j){
+			cout << p3[k][j] <<" ";
 		}
 		cout<<endl;
 	}
