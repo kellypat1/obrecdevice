@@ -3,6 +3,8 @@
 #include <iostream>
 #include <math.h>
 #include <vector>
+#include <boost/range/algorithm.hpp>
+#include <boost/range/irange.hpp>
 
 using namespace std;
 
@@ -65,7 +67,7 @@ vector<float> qo()
 	z = wave_conditions();
 	vector <float> qo_elements;
 	for (int n=0 ; n<33; n++){
-		for(float i=0.5 ; i<3.5 ; i += 0.1){
+		for(float i=0.5 ; i<3.4 ; i += 0.1){
 			float k1;
 			k1 = exp(-2.6 * i / z[1][n]) * 0.2 * pow((9.81 *pow(z[1][n], 3)),0.5);
 			qo_elements.push_back(k1);
@@ -81,7 +83,7 @@ vector <float> nhydro()
 {
 	vector<int> Phydro_elements;
 	vector <float> Pwave_elements,nhydro_elements;
-	for (float i= 0.5 ; i<3.5;i +=0.1){
+	for (float i= 0.5 ; i<3.4;i +=0.1){
 		int k1;
 		k1 = 1000*9.81 *i;
 		Phydro_elements.push_back(k1);
@@ -119,75 +121,128 @@ vector<float> pkel()
 
 // Multiply the power of the water turbine with every beaufort in the certain harbor
 // Every list includes the values of addbf for a certain Rc each time
-
-vector <float> sum_rc()
+vector<float> sum_rc()
 {
-	vector <float>listaddbf,z;
-	z= pkel();
+	vector <float>listaddbf,l;
 	int k=0;
-	while(k<z.size()-29){
-		for(int i=0; i<(sizeof(Beaufort)/sizeof(Beaufort[0]));++i){
-			int n=30+k;
-			for(int k; k<n ;++k){
+	l=pkel();
+	while(k<l.size()-29){
+		for(int i=0; i<(sizeof(Beaufort)/sizeof(Beaufort[0]));i++){
+			for(int k: boost::irange(k,30+k)){
 				float k1;
-				k1= z[k]*Beaufort[i];
-				listaddbf.push_back(k1);
+				k1= l[k] * Beaufort[i];
+				listaddbf.push_back(k1);		
 			}
-		}
 		k+=30;
-	}
-	vector <float> Rc_value;
-	for (int i =0;i<30;++i){
-		float k2;
-		for(int j=i; j<listaddbf.size();j+=31){
-			k2 = listaddbf[j];
 		}
-		Rc_value.push_back(k2);
+	}
+	vector<vector <float>> Rc_value;
+	for (int i =0;i<30;++i){
+		vector<float> rc1;
+		for(int j=i; j<listaddbf.size();j+=30){
+			float k2;
+			k2=listaddbf[j];
+			rc1.push_back(k2);
+		}
+		Rc_value.push_back(rc1);
 	}
 	vector <float> sum_rc_values;
 	for (int i =0 ;i<Rc_value.size();++i){
 		float sum = 0;
-		for(int j=Rc_value[i];j<Rc_value.size();++i){
-			sum +=j;
-		sum_rc_values.push_back(sum);
+		for(int j=i;j<Rc_value[i].size();++j){
+			sum +=Rc_value[i][j] ;
 		}
+		sum_rc_values.push_back(sum);
 	}
+	cout<<Rc_value.size()<<"------------------------------------------------------"<<endl;
+	cout<<listaddbf.size()<<endl;
 	return sum_rc_values;
 }
-
-/*
 
 // Defination of the different scenarios for the hydraulic height of water above water turbine (m)
 vector<vector<float>> Hk()
 {
 	vector<vector<float>>  scenarios;
 	vector <float> hk;
-	for(float i=0.0 ;i = 3.5; i+=0.05){
-		for(float k = 0.5; k=3.5; k+=0.1){
+	for(float i=0.0 ;i < 3.45; i+=0.05){
+		for(float k = 0.5; k<3.4; k+=0.1){
 			float k1;
 			k1 = (k-i)/2 +hs;
 			if ((k1<k) && (k1>0)){
 				hk.push_back(k1);
 			}
 			else{
-				continue;
+				break;
 			}
 		}
 	}
 	scenarios.push_back(hk);
 	return scenarios;
 }
+
+// Calculation of all the different scenarios for the Hk values in order to find the power of the water turbine(pkel) and the crest freeboard (RC) each time.
+// Calculation of the best scenario that maximize the power of the water turbine and calculation of Hk and Rc for this value of pkel.
+
+vector<vector<float>> maximum_of_scenario()
+{
+	vector <float> list,listrc,max_value,n,scenario;
+	vector<float >k1,k2;
+	vector<vector<float> z;
+	z=Hk();
+	n=sum_rc();
+	for (int i =0;i<z.size();++i){
+		k1= z[i]*n;
+		scenario.push_back(k1);
+		k2 = max_value(scenario.begin(),scenario.end());
+		max_of_scenario.push_back(k2);
+
+	}
+
+
+}
+def maximum_of_scenario():
+	listh1 = []
+	listrc = []
+	max_of_all = []
+	max_of_scenario = []
+	k11 = 0
+	scenario = []
+	listsum = sum_rc()
+	for i in np.arange(0, 70):
+		if Hk()[i] != []:
+			k11 = np.array(Hk()[i]) * listsum
+			scenario.append(k11)
+			k16 = [np.amax(k11)]
+			max_of_scenario.append(k16)
+			k17 = np.argmax(k11)
+			k18 = k17 * 0.1 + 0.5
+			max_of_all.append(max_of_scenario)
+			#k20= (i *0.05) + hs
+			#listh1.append(k20)
+			print("h1--------------", i * 0.05, "----------", k11, "\nmax_value------------", k16, "\nRC--------", k18)
+			if max_of_all == max(max_of_all):
+				k19 = (i * 0.05) + hs
+				listh1.append(k19)
+				listrc.append(k18)
+				k21 = max_of_all
+				# print("hydraulic height of water above water turbine,Hk (m)-------", listh1 ,"\nCrest freeboard,Rc(m)------", listrc, "\nMaximum power of the water turbine,Pkel (W/m)-----------", k21)
+			else:
+				pass
+		else:
+			pass
+	return scenario,k21, listh1, listrc
+
 */
 
 
-
-int main(){
-
+int main()
+{
 	vector<vector<float>> z;
 	z =wave_conditions();
 	for( int k=0; k<z.size();++k){
-		for (int j = 0; j < z[k].size(); j++)
+		for (int j = 0; j < z[k].size(); j++){
             cout << z[k][j] << " "; 
+		}
         cout << endl; 
 	}
 	vector<float>n;
@@ -205,21 +260,23 @@ int main(){
 	vector <float> p1;
 	p1 = pkel();
 	for (int k=0 ;k <p1.size();++k){
-		cout<<p1[k];
+		cout<<p1[k]<<endl;
 	}
-	
-	vector <float> p2;
-	p2 = sum_rc();
-	for (int k=0 ;k <p2.size();++k){
-		cout<<p2[k]<<endl;
+
+	vector<float> s;
+	s = sum_rc();
+	for( int k=0; k<s.size();++k){
+		//for (int j=0; j<s[k].size();++j){
+		cout << s[k] <<endl;
 	}
-/*
-	vector<vector<float>> p1;
-	p1= Hk();
-	for( int k=0; k<p1.size();++k){
-		for (int j=0; j<p1[k].size();++j)
-		cout << p1[k][j] <<" ";
+
+	vector<vector<float>> p2;
+	p2= Hk();
+	for( int k=0; k<p2.size();++k){
+		for (int j=0; j<p2[k].size();++j){
+		cout << p2[k][j] <<" ";
+		}
+		cout<<endl;
 	}
-*/
 	return 0;
 }
