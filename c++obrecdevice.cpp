@@ -160,50 +160,57 @@ vector<float> sum_rc()
 }
 
 // Defination of the different scenarios for the hydraulic height of water above water turbine (m)
-vector<vector<float>> Hk()
+vector<float> Hk()
 {
-	vector<vector<float>>  scenarios;
-	vector <float> hk;
+	vector <float> scenarios;
 	for(float i=0.0 ;i < 3.45; i+=0.05){
 		for(float k = 0.5; k<3.4; k+=0.1){
 			float k1;
 			k1 = (k-i)/2 +hs;
 			if ((k1<k) && (k1>0)){
-				hk.push_back(k1);
+				k1;
 			}
 			else{
 				break;
 			}
+			scenarios.push_back(k1);
 		}
 	}
-	scenarios.push_back(hk);
+	cout<<scenarios.size()<<"----------------------------------------------------------------------------------"<<endl;
 	return scenarios;
 }
 
 // Calculation of all the different scenarios for the Hk values in order to find the power of the water turbine(pkel) and the crest freeboard (RC) each time.
 // Calculation of the best scenario that maximize the power of the water turbine and calculation of Hk and Rc for this value of pkel.
-
+/*
 vector<vector<float>> maximum_of_scenario()
 {
 	vector<vector<float>>x;
 	vector <float> scenario,listh1,listrc,max_of_all_values,max_of_scenario,n;
-	float k1,k2,k3,k4,k5,k6;
-	vector<vector<float>> z;
+	float k1,k3,k4,k5,k6;
+	vector<float> z;
 	z=Hk();
 	n=sum_rc();
-	for (int i =0;i<z.size();++i){
-		scenario= z[i]*n;
-		k2 = max_element(scenario.begin(),scenario.end());
-		max_of_scenario.push_back(k2);
-		k3 = max_element(scenario.begin(),scenario.end())-scenario.begin();
-		k4 =k3*0.1 +0.5;
-		max_of_all_values.push_back(max_of_scenario);
-		cout<<"h1--------------"<<i*0.05<<"-----------------"<<k1<<"\nmax value-------------------"<<k2<<"\nRC-----------------"<<k4;
-		if (max_of_all_values = max_element(max_of_all_values.begin(),max_of_all_values.end());){
-			k5=(i*0.05)+hs;
-			listh1.push_back(k5);
-			listrc.push_back(k4);
-			k6=max_of_all_values;
+	int k=0;
+	while (k<z.size()-29){
+		for (int k :boost::irange(k,30+k)){
+			float k1;
+			k1= z[k]*n[k];
+			scenario.push_back(k1);
+			std::vector<int> k2;
+			k2 = max_element(begin(scenario),end(scenario));
+			max_of_scenario.push_back(k2);
+			k3 = max_element(scenario.begin(),scenario.end())-scenario.begin();
+			k4 =k3*0.1 +0.5;
+			max_of_all_values.push_back(max_of_scenario);
+			cout<<"h1--------------"<<i*0.05<<"-----------------"<<k1<<"\nmax value-------------------"<<k2<<"\nRC-----------------"<<k4;
+			if (max_of_all_values = max_element(max_of_all_values.begin(),max_of_all_values.end());){
+				k5=(i*0.05)+hs;
+				listh1.push_back(k5);
+				listrc.push_back(k4);
+				k6=max_of_all_values;
+			}
+		k+=30;
 		}
 	}
 	x.push_back(listh1);
@@ -211,7 +218,7 @@ vector<vector<float>> maximum_of_scenario()
 	x.push_back(k6);
 	return x;
 }
-
+*/
 int main()
 {
 	vector<vector<float>> z;
@@ -247,14 +254,14 @@ int main()
 		cout << s[k] <<endl;
 	}
 
-	vector<vector<float>> p2;
+	vector<float> p2;
 	p2= Hk();
 	for( int k=0; k<p2.size();++k){
-		for (int j=0; j<p2[k].size();++j){
-			cout << p2[k][j] <<" ";
-		}
-		cout<<endl;
-	}
+		//for (int j=0; j<p2[k].size();++j){
+			cout << p2[k] <<",";
+	}	
+	/*	
+	
 	vector<vector<float>> p3;
 	p3= maximum_of_scenario();
 	for( int k=0; k<p3.size();++k){
@@ -263,5 +270,6 @@ int main()
 		}
 		cout<<endl;
 	}
+	*/
 	return 0;
 }
