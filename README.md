@@ -1,4 +1,4 @@
-# obrecdevice
+# obrec_device
 Program to find the optimal dimensions of an OBREC device that maximize the produced energy.
 
 The hydrodynamic problem is solved using an analytic model developed in Python.
